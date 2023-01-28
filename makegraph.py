@@ -1,16 +1,31 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-t = np.arange(-10.0, 10.0, 0.1)
-s = t**2 -5
+import seaborn as sns
+import pandas as pd
+import numpy as np
+from statsmodels.tsa import tsatools 
 
-Max_saturation= max(s)
-Q1_val = 0.25*Max_saturation
-Q2_val = 0.5*Max_saturation
-Q3_val= 0.75*Max_saturation
+#makes the plot come out in sns format
+sns.set()
+
+#read table into python and duration coloumn
+table= pd.read_csv('Moisture.csv')
+Sensor_Val= table.loc[:,"Value"]
+
+increment= input('How often were the values read (In seconds)? ')
+n_readings=len(Sensor_val)
+t = np.arange(0, n_readings*increment, increment)
+
+Max_saturation= max(Sensor_val)
+Min_saturation= min(Sensor_val)
+Saturation_range= Max_saturation-Min_saturation
+Q1_val = 0.25*Saturation_range +Min_saturation
+Q2_val = 0.5*Saturation_range + Min_saturation
+Q3_val= 0.75*Saturation_range + Min_saturation
 
 #Hides values greater than Q1
-Q1 = np.ma.masked_outside(s,0 , Q1_val)
+Q1 = np.ma.masked_outside(s,Min_saturation , Q1_val)
 #Hides values OUTSIDE of Q1 and Q2
 Q2 = np.ma.masked_outside( s,Q1_val, Q2_val)
 #Hides Values outside of Q2 and Q3
