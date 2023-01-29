@@ -10,22 +10,29 @@ def Sensor_val(file):
     maxhumidity=np.max(Humidity)
     Record_length=len(Humidity)
 
-    #Time increment between readings on arduino
+    #Time increment between readings on arduino secs
     Increment= 30
     #Read first value from humidity sensors- initial val
-    Humidity_old= table.iloc[1]
+    Humidity_old= Humidity.iloc[1]
     print(Humidity_old)
     count=1
+    #initialise these so if not changed then you know neither conditions were met
+    time_sat='Not applicable'
+    time_abs='Not applicable'
     for i in range(2,Record_length):
+        #save humidity val being looked at
         Humidity_new= Humidity.iloc[i]
         if (Humidity_new-Humidity_old) > 5 and count==1:
-            #time it started absorbing at
-            time_abs= Increment*i
+            #time it started absorbing at in hours
+            time_abs= (Increment*i)/3600
             #Stop checking for this conditiom
             count=0
         if Humidity_new > 95:
             #time it became saturated at
-            time_sat= Increment*i
-    return [Avg_Temp,time_sat,time_abs]
+            time_sat= (Increment*i)/3600
+            break
+        sensorstat=np.array([Avg_Temp,time_sat,time_abs,maxhumidity])
+    return sensorstat
 
 sensor1= Sensor_val('Moisture.csv')
+print(sensor1)
